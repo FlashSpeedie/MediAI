@@ -1,0 +1,172 @@
+// prisma/schema.prisma
+
+// SUPABASE SETUP INSTRUCTIONS:
+// 1. Go to https://supabase.com and create a free project
+// 2. Go to Settings > Database > Connection String > URI
+// 3. Copy the URI and paste as DATABASE_URL in .env.local
+// 4. Replace [YOUR-PASSWORD] with your Supabase database password
+// 5. Run: npx prisma migrate dev --name init
+// 6. Run: npx prisma generate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?         // null for OAuth users
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Onboarding
+  onboardingComplete  Boolean   @default(false)
+  accountType         AccountType @default(SOLO)
+  
+  // Health Profile
+  age                 Int?
+  gender              String?
+  heightCm            Float?
+  weightKg            Float?
+  bloodType           String?
+  heartRateBpm        Int?
+  bloodPressure       String?    // e.g. "120/80"
+  activityLevel       String?    // sedentary, light, moderate, active
+  dietType            String?    // omnivore, vegetarian, vegan, etc.
+  smokingStatus       String?    // never, former, current
+  alcoholUse          String?    // none, occasional, moderate, heavy
+  
+  // Medical History
+  chronicConditions   String[]   // diabetes, hypertension, asthma etc
+  currentMedications  String[]
+  knownAllergies      String[]
+  
+  // Family
+  familyGroupId       String?
+  familyRole          String?    // admin, member
+  
+  familyGroup         FamilyGroup? @relation(fields: [familyGroupId], references: [id])
+  healthSummaries     HealthSummary[]
+
+  accounts      Account[]
+  sessions      Session[]
+  symptomSessions SymptomSession[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model FamilyGroup {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique  // 6-digit join code
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  adminId     String
+  members     User[]
+}
+
+model HealthSummary {
+  id          String   @id @default(cuid())
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  summary     String   @db.Text   // AI-generated short summary of past sessions
+  sessionCount Int     @default(0)
+  lastUpdated DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model SymptomSession {
+  id          String    @id @default(cuid())
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  chiefComplaint  String                // e.g. "headache and fever"
+  urgencyLevel    UrgencyLevel          @default(LOW)
+  summary         String?   @db.Text   // AI-generated session summary
+  completed       Boolean   @default(false)
+  
+  messages    Message[]
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  sessionId String
+  role      MessageRole
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  
+  // Optional: store medicine recommendations as JSON
+  metadata  Json?
+  
+  session   SymptomSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+enum AccountType {
+  SOLO
+  FAMILY
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
