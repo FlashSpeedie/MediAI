@@ -1,4 +1,4 @@
-// prisma/schema.prisma
+﻿// prisma/schema.prisma
 
 // SUPABASE SETUP INSTRUCTIONS:
 // 1. Go to https://supabase.com and create a free project
@@ -31,7 +31,7 @@ model User {
   // Onboarding
   onboardingComplete  Boolean   @default(false)
   accountType         AccountType @default(SOLO)
-  
+
   // Health Profile
   age                 Int?
   gender              String?
@@ -44,22 +44,23 @@ model User {
   dietType            String?    // omnivore, vegetarian, vegan, etc.
   smokingStatus       String?    // never, former, current
   alcoholUse          String?    // none, occasional, moderate, heavy
-  
+
   // Medical History
   chronicConditions   String[]   // diabetes, hypertension, asthma etc
   currentMedications  String[]
   knownAllergies      String[]
-  
+
   // Family
   familyGroupId       String?
   familyRole          String?    // admin, member
-  
+
   familyGroup         FamilyGroup? @relation(fields: [familyGroupId], references: [id])
   healthSummaries     HealthSummary[]
 
   accounts      Account[]
   sessions      Session[]
   symptomSessions SymptomSession[]
+  medicineCabinet MedicineCabinet[]
 }
 
 model Account {
@@ -115,9 +116,9 @@ model HealthSummary {
   summary     String   @db.Text   // AI-generated short summary of past sessions
   sessionCount Int     @default(0)
   lastUpdated DateTime @default(now())
-  
+
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
@@ -126,12 +127,12 @@ model SymptomSession {
   userId      String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   chiefComplaint  String                // e.g. "headache and fever"
   urgencyLevel    UrgencyLevel          @default(LOW)
   summary         String?   @db.Text   // AI-generated session summary
   completed       Boolean   @default(false)
-  
+
   messages    Message[]
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -144,13 +145,42 @@ model Message {
   role      MessageRole
   content   String   @db.Text
   createdAt DateTime @default(now())
-  
+
   // Optional: store medicine recommendations as JSON
   metadata  Json?
-  
+
   session   SymptomSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
+}
+
+model MedicineCabinet {
+  id                String   @id @default(cuid())
+  userId            String
+  createdAt         DateTime @default(now())
+updatedAt         DateTime @updatedAt
+  productName       String
+  brandName         String?
+  genericName       String?
+  strength          String?
+  dosageForm        String?
+  ndc               String?
+  manufacturer      String?
+  expirationDate    DateTime?
+  notes             String?  @db.Text
+  verificationState VerificationState @default(NEEDS_REVIEW)
+  sourceIdentifiers Json?
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, productName])
+}
+
+enum VerificationState {
+  NEEDS_REVIEW
+  USER_CONFIRMED
+  UNABLE_TO_MATCH
 }
 
 enum AccountType {

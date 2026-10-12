@@ -1,19 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeImage } from '@/lib/gemini';
 import { getGroqChatResponse } from '@/lib/groq';
+import { validateRequest, analyzeImageRequestSchema } from '@/lib/validation';
+import { imageAnalysisRateLimiter, addRateLimitHeaders } from '@/lib/rate-limit';
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+function validateBase64Image(base64: string, mimeType: string): { valid: boolean; error?: string } {
+  if (!base64 || base64.length === 0) {
+    return { valid: false, error: 'Image data is empty' };
+  }
+
+  if (base64.length > MAX_IMAGE_SIZE * 1.5) { // base64 is ~33% larger
+    return { valid: false, error: `Image too large. Maximum size is ${MAX_IMAGE_SIZE / (1024 * 1024)}MB` };
+  }
+
+  if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+    return { valid: false, error: `Unsupported image type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}` };
+  }
+
+  // Basic base64 validation
+  const base64Regex = /^[A-Za-z0-9+/]+={0,2}$/;
+  if (!base64Regex.test(base64)) {
+    return { valid: false, error: 'Invalid image encoding' };
+  }
+
+  return { valid: true };
+}
 
 export async function POST(request: NextRequest) {
-  try {
-    const { imageBase64, mimeType, context } = await request.json();
+  const rateLimitResult = await imageAnalysisRateLimiter(request);
 
-    if (!imageBase64) {
-      return NextResponse.json({ error: 'Image data is required' }, { status: 400 });
+  try {
+    const body = await request.json();
+    const validation = validateRequest(analyzeImageRequestSchema, body);
+
+    if (!validation.success) {
+      const response = NextResponse.json({ error: validation.error }, { status: 400 });
+      return addRateLimitHeaders(response, rateLimitResult);
+    }
+
+    const { imageBase64, mimeType = 'image/jpeg', context } = validation.data;
+
+    const imageValidation = validateBase64Image(imageBase64, mimeType);
+    if (!imageValidation.valid) {
+      const response = NextResponse.json({ error: imageValidation.error }, { status: 400 });
+      return addRateLimitHeaders(response, rateLimitResult);
     }
 
     // Step 1: Gemini Vision reads the image and extracts all text/details
     const geminiAnalysis = await analyzeImage(
       imageBase64,
-      mimeType ?? 'image/jpeg',
+      mimeType,
       context ?? 'Patient uploaded a medicine or symptom photo.'
     );
 
@@ -26,12 +65,14 @@ export async function POST(request: NextRequest) {
     // Combine both analyses
     const combinedAnalysis = `**📷 Image Analysis (Gemini Vision):**\n${geminiAnalysis}\n\n**💊 Medical Guidance (AI):**\n${groqRecommendation}`;
 
-    return NextResponse.json({ analysis: combinedAnalysis });
+    const response = NextResponse.json({ analysis: combinedAnalysis, geminiAnalysis, groqRecommendation });
+    return addRateLimitHeaders(response, rateLimitResult);
   } catch (error) {
     console.error('Image analysis error:', error);
-    return NextResponse.json(
-      { error: 'Failed to analyze image' },
+    const response = NextResponse.json(
+      { error: 'Failed to analyze image. Please try again.' },
       { status: 500 }
     );
+    return addRateLimitHeaders(response, rateLimitResult);
   }
 }

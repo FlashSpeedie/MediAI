@@ -6,7 +6,7 @@ import {
   Stethoscope, History, MessageSquare, User,
   Settings, LogOut, ChevronDown, UserCircle,
   LayoutDashboard, Heart, HelpCircle, Info,
-  Sparkles
+  Sparkles, Menu, X, Pill, Camera
 } from 'lucide-react';
 import Image from 'next/image';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -17,6 +17,7 @@ export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -27,9 +28,13 @@ export default function Navbar() {
   const navLinks = [
     { href: '/chat', label: 'New Session', icon: MessageSquare },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/cabinet', label: 'Medicine Cabinet', icon: Pill },
+    { href: '/scan', label: 'Scan Medicine', icon: Camera },
     { href: '/about', label: 'About', icon: Info },
     { href: '/how-it-works', label: 'How it Works', icon: HelpCircle },
   ];
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <header className={cn(
@@ -50,7 +55,18 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Center nav — only when logged in */}
+        {/* Mobile menu button */}
+        <button
+          className="md:hidden p-2 rounded-lg text-gray-600 hover:text-navy hover:bg-warm-gray transition-colors"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-menu"
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+
+        {/* Center nav — only when logged in (desktop) */}
         {session && (
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map(({ href, label, icon: Icon }) => {
@@ -72,6 +88,56 @@ export default function Navbar() {
               );
             })}
           </nav>
+        )}
+
+        {/* Mobile menu drawer */}
+        {session && mobileMenuOpen && (
+          <div
+            id="mobile-menu"
+            className="md:hidden fixed inset-0 z-40 bg-black/50"
+            onClick={closeMobileMenu}
+            aria-hidden="true"
+          />
+        )}
+        {session && mobileMenuOpen && (
+          <aside
+            id="mobile-menu-panel"
+            className="md:hidden fixed top-0 right-0 z-50 w-full max-w-sm h-full bg-white shadow-floating border-l border-warm-border animate-slide-in"
+            role="dialog"
+            aria-label="Navigation menu"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-warm-border">
+              <h2 className="font-display font-semibold text-navy">Menu</h2>
+              <button
+                onClick={closeMobileMenu}
+                className="p-2 rounded-lg text-gray-500 hover:text-navy hover:bg-warm-gray transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <nav className="p-4 space-y-2">
+              {navLinks.map(({ href, label, icon: Icon }) => {
+                const isActive = pathname === href || pathname?.startsWith(href + '/');
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={closeMobileMenu}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-colors',
+                      isActive
+                        ? 'bg-teal-light text-teal-dark'
+                        : 'text-gray-600 hover:text-navy hover:bg-warm-gray'
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
         )}
 
         {/* Right side */}

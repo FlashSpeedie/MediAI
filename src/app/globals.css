@@ -110,5 +110,10 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(15,31,61,0.85);
     backdrop-filter: blur(12px);
   }
-  .text-balance { text-wrap: balance; }
+.text-balance { text-wrap: balance; }
+
+/* Skip link must be above sticky header */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[60] px-4 py-2 bg-teal text-white rounded-lg font-medium;
+  }
 }

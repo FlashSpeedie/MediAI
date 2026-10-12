@@ -64,6 +64,48 @@ export interface CombinedDrugInfo {
   rxNormSource: boolean;
 }
 
+// ─── FDA Recall Types ──────────────────────────────────────────────────────────
+interface FDAEnforcementResult {
+  recall_number?: string;
+  product_description?: string;
+  product_quantity?: string;
+  reason_for_recall?: string;
+  recall_initiation_date?: string;
+  classification?: string;
+  status?: string;
+  distribution_pattern?: string;
+  code_info?: string;
+  recalling_firm?: string;
+  product_type?: string;
+  voluntary_mandated?: string;
+  report_date?: string;
+  recalling_firm_city?: string;
+  recalling_firm_state?: string;
+  termination_date?: string;
+  openfda?: OpenFDA;
+}
+
+export interface RecallResult {
+  recallNumber: string;
+  productDescription: string;
+  reasonForRecall: string;
+  recallDate: string;
+  classification: string;
+  status: string;
+  firmName: string;
+  productType: string;
+  sourceUrl: string;
+  retrievedAt: string;
+}
+
+export interface RecallSearchResult {
+  matches: RecallResult[];
+  searchTerm: string;
+  searchedAt: string;
+  queryStatus: 'success' | 'no_matches' | 'ambiguous' | 'error';
+  error?: string;
+}
+
 // ─── OpenFDA Search ───────────────────────────────────────────────────────────
 export async function searchOpenFDA(drugName: string): Promise<FDADrugInfo | null> {
   try {
@@ -219,3 +261,94 @@ export const OTC_SEED_NAMES = [
   'Theraflu',
   'Dramamine',
 ];
+
+// ─── FDA Recall Lookup ─────────────────────────────────────────────────────────
+export async function searchFDAEnforcement(
+  searchTerm: string,
+  options: { limit?: number } = {}
+): Promise<RecallSearchResult> {
+  const { limit = 10 } = options;
+  const searchedAt = new Date().toISOString();
+
+  try {
+    const encodedTerm = encodeURIComponent(searchTerm);
+    const url = `https://api.fda.gov/drug/enforcement.json?search=product_description:${encodedTerm}+OR+recalling_firm:${encodedTerm}&limit=${limit}`;
+
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'MediAI-App/1.0' },
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) {
+      return {
+        matches: [],
+        searchTerm,
+        searchedAt,
+        queryStatus: 'error',
+        error: `FDA API error: ${res.status}`,
+      };
+    }
+
+    const data = await res.json();
+    const results = data.results as FDAEnforcementResult[] | undefined;
+
+    if (!results?.length) {
+      return {
+        matches: [],
+        searchTerm,
+        searchedAt,
+        queryStatus: 'no_matches',
+      };
+    }
+
+    const matches: RecallResult[] = results.map((r) => ({
+      recallNumber: r.recall_number ?? 'Unknown',
+      productDescription: r.product_description ?? 'Unknown product',
+      reasonForRecall: r.reason_for_recall ?? 'No reason provided',
+      recallDate: r.recall_initiation_date ?? 'Unknown date',
+      classification: r.classification ?? 'Unclassified',
+      status: r.status ?? 'Unknown',
+      firmName: r.recalling_firm ?? 'Unknown firm',
+      productType: r.product_type ?? 'Drug',
+      sourceUrl: `https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfRes/res.cfm?recall_number=${r.recall_number}`,
+      retrievedAt: searchedAt,
+    }));
+
+    return {
+      matches,
+      searchTerm,
+      searchedAt,
+      queryStatus: matches.length === 1 ? 'success' : 'ambiguous',
+    };
+  } catch (error) {
+    return {
+      matches: [],
+      searchTerm,
+      searchedAt,
+      queryStatus: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+// ─── Enhanced drug info with recall data ───────────────────────────────────────
+export async function getDrugInfoWithRecalls(drugName: string): Promise<{
+  drugInfo: CombinedDrugInfo | null;
+  recalls: RecallSearchResult;
+}> {
+  const [drugInfo, recalls] = await Promise.allSettled([
+    getDrugInfo(drugName),
+    searchFDAEnforcement(drugName, { limit: 5 }),
+  ]);
+
+  return {
+    drugInfo: drugInfo.status === 'fulfilled' ? drugInfo.value : null,
+    recalls: recalls.status === 'fulfilled' ? recalls.value : {
+      matches: [],
+      searchTerm: drugName,
+      searchedAt: new Date().toISOString(),
+      queryStatus: 'error',
+      error: recalls.status === 'rejected' ? recalls.reason?.message : 'Unknown error',
+    },
+  };
+}

@@ -1,8 +1,7 @@
-// src/app/api/onboarding/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { validateRequest, onboardingSchema } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -12,31 +11,31 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const {
-      age, gender, heightCm, weightKg, bloodType,
-      heartRateBpm, bloodPressure, activityLevel, dietType,
-      smokingStatus, alcoholUse, chronicConditions,
-      currentMedications, knownAllergies, accountType,
-    } = body;
+    const validation = validateRequest(onboardingSchema, body);
 
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    const data = validation.data;
     const updated = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        age: age ? parseInt(age) : undefined,
-        gender,
-        heightCm: heightCm ? parseFloat(heightCm) : undefined,
-        weightKg: weightKg ? parseFloat(weightKg) : undefined,
-        bloodType,
-        heartRateBpm: heartRateBpm ? parseInt(heartRateBpm) : undefined,
-        bloodPressure,
-        activityLevel,
-        dietType,
-        smokingStatus,
-        alcoholUse,
-        chronicConditions: chronicConditions ?? [],
-        currentMedications: currentMedications ?? [],
-        knownAllergies: knownAllergies ?? [],
-        accountType: accountType ?? 'SOLO',
+        age: data.age,
+        gender: data.gender,
+        heightCm: data.heightCm,
+        weightKg: data.weightKg,
+        bloodType: data.bloodType,
+        heartRateBpm: data.heartRateBpm,
+        bloodPressure: data.bloodPressure,
+        activityLevel: data.activityLevel,
+        dietType: data.dietType,
+        smokingStatus: data.smokingStatus,
+        alcoholUse: data.alcoholUse,
+        chronicConditions: data.chronicConditions ?? [],
+        currentMedications: data.currentMedications ?? [],
+        knownAllergies: data.knownAllergies ?? [],
+        accountType: data.accountType ?? 'SOLO',
         onboardingComplete: true,
       },
     });

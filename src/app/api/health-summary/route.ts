@@ -45,9 +45,9 @@ export async function POST() {
   }
 
   // Build text of past sessions for Groq to summarize
-  const sessionTexts = sessions.map((s: any) => {
+  const sessionTexts = sessions.map((s) => {
     const msgs = s.messages
-      .map((m: any) => `${m.role}: ${m.content.substring(0, 200)}`)
+      .map((m) => `${m.role}: ${m.content.substring(0, 200)}`)
       .join('\n');
     return `Session (${new Date(s.createdAt).toLocaleDateString()}): ${s.chiefComplaint}\nUrgency: ${s.urgencyLevel}\n${msgs}`;
   }).join('\n\n---\n\n');

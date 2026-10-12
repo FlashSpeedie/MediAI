@@ -12,9 +12,27 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { Prisma } from '@prisma/client';
+
 type Tab = 'overview' | 'personal' | 'health' | 'lifestyle' | 'medical' | 'security' | 'family' | 'danger';
 
-interface Props { user: any; }
+type UserWithRelations = Prisma.UserGetPayload<{
+  include: {
+    familyGroup: {
+      include: {
+        members: {
+          select: {
+            id: true; name: true; image: true; age: true; gender: true; onboardingComplete: true;
+          }
+        }
+      }
+    };
+    healthSummaries: { orderBy: { updatedAt: 'desc' }; take: 1 };
+    _count: { select: { symptomSessions: true } };
+  }
+}>;
+
+interface Props { user: UserWithRelations | null; }
 
 export default function AccountPage({ user }: Props) {
   const router = useRouter();
@@ -609,7 +627,7 @@ export default function AccountPage({ user }: Props) {
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-3">Members ({user.familyGroup.members.length})</p>
                       <div className="space-y-2">
-                        {user.familyGroup.members.map((m: any) => (
+                        {user.familyGroup.members.map((m) => (
                           <div key={m.id} className="flex items-center gap-4 p-4 bg-warm-gray rounded-2xl">
                             {m.image
                               ? <Image src={m.image} alt="" width={44} height={44} className="rounded-2xl" />
@@ -619,7 +637,7 @@ export default function AccountPage({ user }: Props) {
                               <p className="font-semibold text-gray-800">{m.name ?? 'Member'}</p>
                               {m.age && <p className="text-xs text-gray-400">{m.gender} · {m.age} years old</p>}
                             </div>
-                            {m.id === user.familyGroup.adminId && (
+                            {m.id === user.familyGroup?.adminId && (
                               <span className="text-xs bg-amber/20 text-amber-700 border border-amber/30 px-2.5 py-1 rounded-full font-medium">Admin</span>
                             )}
                             {!m.onboardingComplete && (

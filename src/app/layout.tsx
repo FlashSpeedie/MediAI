@@ -22,7 +22,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <Disclaimer />
           <Navbar />
-          <main className="min-h-[calc(100vh-4rem)]">
+          <a
+            href="#main-content"
+            className="skip-link"
+          >
+            Skip to main content
+          </a>
+          <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)]">
             {children}
           </main>
         </SessionProvider>

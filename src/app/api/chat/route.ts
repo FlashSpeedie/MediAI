@@ -1,20 +1,57 @@
-// src/app/api/chat/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getGroqChatResponse } from '@/lib/groq';
 import { analyzeImage } from '@/lib/gemini';
 import { prisma } from '@/lib/prisma';
-import { ChatApiRequest } from '@/types';
+import { validateRequest, chatApiRequestSchema, ChatApiRequest } from '@/lib/validation';
 import { buildUserContextString, getUserContextFromProfile } from '@/lib/user-context';
+import { chatRateLimiter, addRateLimitHeaders } from '@/lib/rate-limit';
+import { EMERGENCY_KEYWORDS, HIGH_URGENCY_KEYWORDS } from '@/constants/triage';
+import { UrgencyLevel } from '@/types';
+import { parseUrgencyFromResponse, extractMedicineRecommendations, buildUrgencyAssessment, validateChatResponse } from '@/lib/chat-response';
+
+interface ValidatedChatResponse {
+  reply: string;
+  urgencyLevel: UrgencyLevel;
+  urgencyAssessment?: {
+    level: UrgencyLevel;
+    reason: string;
+    action: string;
+    callEmergency: boolean;
+    goToER: boolean;
+  };
+  recommendedMedicines: Array<{
+    name: string;
+    genericName: string;
+    dosage: string;
+    frequency: string;
+    warnings: string[];
+    conditions: string[];
+    category: string;
+    requiresPrescription: boolean;
+  }>;
+  followUpQuestion?: string;
+  triageComplete: boolean;
+}
 
 export async function POST(request: NextRequest) {
+  const rateLimitResult = await chatRateLimiter(request);
+
   try {
     const session = await auth();
-    const body: ChatApiRequest = await request.json();
-    const { message, sessionId, imageBase64, conversationHistory } = body;
+    const body = await request.json();
+    const validation = validateRequest(chatApiRequestSchema, body);
+
+    if (!validation.success) {
+      const response = NextResponse.json({ error: validation.error }, { status: 400 });
+      return addRateLimitHeaders(response, rateLimitResult);
+    }
+
+    const { message, sessionId, imageBase64, conversationHistory } = validation.data;
 
     if (!message?.trim() && !imageBase64) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+      const response = NextResponse.json({ error: 'Message is required' }, { status: 400 });
+      return addRateLimitHeaders(response, rateLimitResult);
     }
 
     let activeSessionId = sessionId;
@@ -23,16 +60,65 @@ export async function POST(request: NextRequest) {
       const dbSession = await prisma.symptomSession.create({
         data: {
           userId: session.user.id,
-          chiefComplaint: message.substring(0, 200),
+          chiefComplaint: (message ?? '').substring(0, 200),
         },
       });
       activeSessionId = dbSession.id;
     }
 
-    let fullMessage = message;
+    let fullMessage = message ?? '';
     if (imageBase64) {
-      const imageAnalysis = await analyzeImage(imageBase64, 'image/jpeg', message);
-      fullMessage = `${message}\n\n[Camera Analysis]: ${imageAnalysis}`;
+      const imageAnalysis = await analyzeImage(imageBase64, 'image/jpeg', message ?? '');
+      fullMessage = `${fullMessage}\n\n[Camera Analysis]: ${imageAnalysis}`;
+    }
+
+    // Emergency keyword detection - deterministic safety layer
+    const lowerMessage = fullMessage.toLowerCase();
+    const isEmergency = EMERGENCY_KEYWORDS.some((kw) => lowerMessage.includes(kw));
+    const isHighUrgency = HIGH_URGENCY_KEYWORDS.some((kw) => lowerMessage.includes(kw));
+
+    if (isEmergency) {
+      const emergencyResponse: ValidatedChatResponse = {
+        reply: `🚨 **EMERGENCY DETECTED** 🚨\n\nBased on what you've described, this may be a **medical emergency**.\n\n## CALL 911 IMMEDIATELY\n\nDo not wait. Call **911** or go to the nearest Emergency Room right now.\n\n[URGENCY: CRITICAL]\n\n⚠️ DISCLAIMER: I am an AI assistant, not a licensed physician. This is not medical advice.`,
+        urgencyLevel: 'CRITICAL',
+        urgencyAssessment: {
+          level: 'CRITICAL',
+          reason: 'Emergency keywords detected',
+          action: 'Call 911 immediately',
+          callEmergency: true,
+          goToER: true,
+        },
+        recommendedMedicines: [],
+        triageComplete: true,
+};
+      if (session?.user?.id && activeSessionId) {
+        await prisma.$transaction([
+          prisma.message.create({
+            data: { sessionId: activeSessionId, role: 'USER', content: message ?? '' },
+          }),
+          prisma.message.create({
+            data: {
+              sessionId: activeSessionId,
+              role: 'ASSISTANT',
+              content: emergencyResponse.reply,
+              metadata: {
+                urgencyLevel: emergencyResponse.urgencyLevel,
+                recommendedMedicines: [],
+              },
+            },
+          }),
+          prisma.symptomSession.update({
+            where: { id: activeSessionId },
+            data: { urgencyLevel: 'CRITICAL', completed: true },
+          }),
+        ]);
+      }
+
+      const response = NextResponse.json({
+        ...emergencyResponse,
+        sessionId: activeSessionId ?? `temp-${Date.now()}`,
+      });
+      return addRateLimitHeaders(response, rateLimitResult);
     }
 
     // Fetch user health profile and past summary
@@ -64,8 +150,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Sanitize and fix conversation history before sending to Groq
-    // Convert to Groq format {role: 'user' | 'assistant', content: string}
-    // Ensure proper alternating structure
     const groqHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
     for (const msg of (conversationHistory ?? [])) {
@@ -86,59 +170,89 @@ export async function POST(request: NextRequest) {
     }
 
     const { reply, urgencyLevel, urgencyAssessment, recommendedMedicines } =
-      await getGroqChatResponse(fullMessage, groqHistory, userContextString);
+      await getGroqChatResponse(fullMessage ?? '', groqHistory, userContextString);
 
-    const triageComplete = (conversationHistory?.length ?? 0) >= 8;
+    // Validate and structure the AI response
+    const validatedResponse = validateChatResponse({
+      reply,
+      urgencyLevel,
+      urgencyAssessment,
+      recommendedMedicines,
+    });
+
+    // Emergency detection takes priority over AI assessment
+    if (isEmergency) {
+      validatedResponse.urgencyLevel = 'CRITICAL';
+      validatedResponse.urgencyAssessment = {
+        level: 'CRITICAL',
+        reason: 'Emergency keywords detected',
+        action: 'Call 911 immediately',
+        callEmergency: true,
+        goToER: true,
+      };
+      validatedResponse.triageComplete = true;
+    }
+
+    const triageComplete = validatedResponse.triageComplete;
 
     if (session?.user?.id && activeSessionId) {
       await prisma.$transaction([
         prisma.message.create({
-          data: { sessionId: activeSessionId, role: 'USER', content: message },
+          data: { sessionId: activeSessionId, role: 'USER', content: message ?? '' },
         }),
         prisma.message.create({
           data: {
             sessionId: activeSessionId,
             role: 'ASSISTANT',
-            content: reply,
+            content: validatedResponse.reply,
             metadata: {
-              urgencyLevel,
-              recommendedMedicines: recommendedMedicines.map((m) => m.name),
+              urgencyLevel: validatedResponse.urgencyLevel,
+              recommendedMedicines: validatedResponse.recommendedMedicines.map((m: { name: string }) => m.name),
             },
           },
         }),
         prisma.symptomSession.update({
           where: { id: activeSessionId },
-          data: { urgencyLevel },
+          data: { urgencyLevel: validatedResponse.urgencyLevel },
         }),
       ]);
 
-      // Mark session complete and trigger summary update in background
+      // Mark session complete and trigger summary update
       if (triageComplete) {
         await prisma.symptomSession.update({
           where: { id: activeSessionId },
           data: { completed: true },
         });
-        // Trigger summary update in background
-        fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/health-summary`, {
-          method: 'POST',
-          headers: { 'Cookie': request.headers.get('cookie') ?? '' },
-        }).catch(() => {});
+
+        // Trigger summary update with proper error handling
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/health-summary`, {
+            method: 'POST',
+            headers: { 'Cookie': request.headers.get('cookie') ?? '' },
+          });
+        } catch {
+          // Log but don't fail the main response
+          console.warn('Health summary generation failed');
+        }
       }
     }
 
-    return NextResponse.json({
-      reply,
-      urgencyLevel,
-      urgencyAssessment,
-      recommendedMedicines,
+    const response = NextResponse.json({
+      reply: validatedResponse.reply,
+      urgencyLevel: validatedResponse.urgencyLevel,
+      urgencyAssessment: validatedResponse.urgencyAssessment,
+      recommendedMedicines: validatedResponse.recommendedMedicines,
       sessionId: activeSessionId ?? `temp-${Date.now()}`,
       triageComplete,
+      followUpQuestion: validatedResponse.followUpQuestion,
     });
+    return addRateLimitHeaders(response, rateLimitResult);
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error. Please try again.' },
       { status: 500 }
     );
+    return addRateLimitHeaders(response, rateLimitResult);
   }
 }
