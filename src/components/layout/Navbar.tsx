@@ -66,7 +66,7 @@ export default function Navbar() {
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Center nav — only when logged in (desktop) */}
+        {/* Center nav - only when logged in (desktop) */}
         {session && (
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map(({ href, label, icon: Icon }) => {
@@ -251,3 +251,4 @@ export default function Navbar() {
     </header>
   );
 }
+

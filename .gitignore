@@ -42,3 +42,7 @@ prisma/*.db-journal
 # IDE
 .idea
 .vscode
+
+# Playwright
+playwright-report/
+test-results/

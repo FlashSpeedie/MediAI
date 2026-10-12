@@ -97,3 +97,4 @@ export default function MessageBubble({ message, isLatest }: Props) {
     </div>
   );
 }
+

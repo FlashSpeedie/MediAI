@@ -510,23 +510,23 @@ export function MedicineScanner() {
                 </div>
                 <div>
                   <span className="text-teal-600">Brand:</span>
-                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.brandName || '—'}</span>
+                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.brandName || '-'}</span>
                 </div>
                 <div>
                   <span className="text-teal-600">Generic:</span>
-                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.genericName || '—'}</span>
+                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.genericName || '-'}</span>
                 </div>
                 <div>
                   <span className="text-teal-600">Strength:</span>
-                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.strength || '—'}</span>
+                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.strength || '-'}</span>
                 </div>
                 <div>
                   <span className="text-teal-600">Form:</span>
-                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.dosageForm || '—'}</span>
+                  <span className="font-medium text-gray-800 ml-2">{scanState.parsedMedicine.dosageForm || '-'}</span>
                 </div>
                 <div>
                   <span className="text-teal-600">NDC:</span>
-                  <span className="font-medium text-gray-800 ml-2 font-mono">{scanState.parsedMedicine.ndc || '—'}</span>
+                  <span className="font-medium text-gray-800 ml-2 font-mono">{scanState.parsedMedicine.ndc || '-'}</span>
                 </div>
               </div>
               <p className="text-xs text-teal-600 mt-3">Review and correct any errors above, then continue to verify with official sources.</p>
@@ -630,7 +630,7 @@ export function MedicineScanner() {
               ) : scanState.recalls.queryStatus === 'ambiguous' ? (
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <p className="text-sm text-amber-800 flex items-center gap-1">
-                    <AlertTriangle className="w-4 h-4" /> {scanState.recalls.matches.length} possible matches — review manually
+                    <AlertTriangle className="w-4 h-4" /> {scanState.recalls.matches.length} possible matches - review manually
                   </p>
                 </div>
               ) : (

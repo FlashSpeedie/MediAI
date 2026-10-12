@@ -1,4 +1,4 @@
-export const metadata = { title: 'Terms of Service — MediAI' };
+export const metadata = { title: 'Terms of Service - MediAI' };
 
 export default function TermsPage() {
   return (
@@ -26,3 +26,4 @@ export default function TermsPage() {
     </div>
   );
 }
+

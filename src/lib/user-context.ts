@@ -5,7 +5,7 @@ import { UserContextForAI } from '@/types';
 export function buildUserContextString(context: UserContextForAI): string {
   const parts: string[] = [];
 
-  // Date and time — always included
+  // Date and time - always included
   parts.push(`[Current Date & Time: ${context.currentDateTime}]`);
   parts.push(`[Day: ${context.dayOfWeek}]`);
 
@@ -129,3 +129,4 @@ export function getUserContextFromProfile(
     pastHealthSummary: pastHealthSummary ?? undefined,
   };
 }
+

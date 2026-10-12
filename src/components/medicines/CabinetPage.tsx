@@ -558,7 +558,7 @@ export default function CabinetPage({ userId }: { userId: string }) {
                                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                                     <p className="text-sm text-amber-800 flex items-center gap-1">
                                       <AlertTriangle className="w-4 h-4" />
-                                      {recalls.matches.length} possible recall matches — review manually
+                                      {recalls.matches.length} possible recall matches - review manually
                                     </p>
                                     <p className="text-xs text-amber-700 mt-1">Multiple products matched; verify by NDC or exact product name</p>
                                   </div>

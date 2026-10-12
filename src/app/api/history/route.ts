@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/history — get all sessions for current user
+// GET /api/history - get all sessions for current user
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -22,7 +22,7 @@ export async function GET() {
   return NextResponse.json({ sessions });
 }
 
-// POST /api/history — mark session as complete + generate summary
+// POST /api/history - mark session as complete + generate summary
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -38,3 +38,4 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ session: updated });
 }
+

@@ -8,3 +8,4 @@ export async function DELETE() {
   await prisma.user.delete({ where: { id: session.user.id } });
   return NextResponse.json({ success: true });
 }
+

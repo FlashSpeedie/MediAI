@@ -4,38 +4,38 @@ import {
   AlertTriangle, ArrowRight, CheckCircle, ChevronRight
 } from 'lucide-react';
 
-export const metadata = { title: 'How It Works — MediAI' };
+export const metadata = { title: 'How It Works - MediAI' };
 
 const steps = [
   {
     num: '01', icon: MessageSquare, color: 'bg-teal text-white',
     title: 'Sign up & set your health profile',
-    desc: 'Create your account and complete a one-time health profile — age, weight, conditions, medications, allergies. This gives MediAI the context to give you personalized guidance instead of generic advice.',
+    desc: 'Create your account and complete a one-time health profile - age, weight, conditions, medications, allergies. This gives MediAI the context to give you personalized guidance instead of generic advice.',
     detail: 'Your profile is encrypted and never shared. It\'s only used to personalize AI responses.',
   },
   {
     num: '02', icon: Brain, color: 'bg-navy text-white',
     title: 'Describe your symptoms',
-    desc: 'Start a new session and tell MediAI what\'s bothering you. Use text, your voice, or even your camera. The AI will ask you one structured question at a time — just like a real intake nurse.',
-    detail: 'Powered by Groq\'s Llama 3.3 70B — one of the fastest and most accurate large language models available.',
+    desc: 'Start a new session and tell MediAI what\'s bothering you. Use text, your voice, or even your camera. The AI will ask you one structured question at a time - just like a real intake nurse.',
+    detail: 'Powered by Groq\'s Llama 3.3 70B - one of the fastest and most accurate large language models available.',
   },
   {
     num: '03', icon: Camera, color: 'bg-purple-600 text-white',
     title: 'Use your camera (optional)',
     desc: 'Point your camera at a medicine bottle and MediAI will read the label, cross-check it with FDA data, and tell you if it\'s appropriate for your symptoms. Or show a visible symptom for visual analysis.',
-    detail: 'Image analysis uses Google Gemini Vision — the same AI that powers Google Lens.',
+    detail: 'Image analysis uses Google Gemini Vision - the same AI that powers Google Lens.',
   },
   {
     num: '04', icon: Pill, color: 'bg-amber text-white',
     title: 'Get your assessment',
-    desc: 'After gathering enough information, MediAI provides a clear urgency assessment — LOW, MEDIUM, HIGH, or CRITICAL — with specific next steps and FDA-sourced OTC medicine recommendations if appropriate.',
+    desc: 'After gathering enough information, MediAI provides a clear urgency assessment - LOW, MEDIUM, HIGH, or CRITICAL - with specific next steps and FDA-sourced OTC medicine recommendations if appropriate.',
     detail: 'Medicine data is pulled live from the official FDA OpenFDA API and NIH RxNorm database.',
   },
   {
     num: '05', icon: AlertTriangle, color: 'bg-coral text-white',
     title: 'Know exactly what to do',
-    desc: 'Whether it\'s rest and drink fluids, go to urgent care, or call 911 right now — you\'ll know. Your session is saved to your history so you and your doctor can reference it later.',
-    detail: 'Emergency detection is instant — if you describe chest pain or stroke symptoms, 911 guidance appears immediately without waiting for the conversation to complete.',
+    desc: 'Whether it\'s rest and drink fluids, go to urgent care, or call 911 right now - you\'ll know. Your session is saved to your history so you and your doctor can reference it later.',
+    detail: 'Emergency detection is instant - if you describe chest pain or stroke symptoms, 911 guidance appears immediately without waiting for the conversation to complete.',
   },
 ];
 
@@ -51,7 +51,7 @@ export default function HowItWorksPage() {
             From symptoms to answers in minutes
           </h1>
           <p className="text-xl text-gray-500 text-balance">
-            MediAI guides you through a structured triage process — the same kind used in real emergency rooms — to give you clear, personalized next steps.
+            MediAI guides you through a structured triage process - the same kind used in real emergency rooms - to give you clear, personalized next steps.
           </p>
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function HowItWorksPage() {
             {[
               {
                 q: 'Is MediAI a replacement for seeing a doctor?',
-                a: 'No. MediAI is a triage tool — it helps you understand urgency and next steps, but it cannot diagnose conditions. Always see a doctor for ongoing or serious health concerns.',
+                a: 'No. MediAI is a triage tool - it helps you understand urgency and next steps, but it cannot diagnose conditions. Always see a doctor for ongoing or serious health concerns.',
               },
               {
                 q: 'Is my health information private?',
@@ -101,15 +101,15 @@ export default function HowItWorksPage() {
               },
               {
                 q: 'What if it\'s an emergency?',
-                a: 'If you describe emergency symptoms (chest pain, difficulty breathing, stroke signs), MediAI will immediately tell you to call 911 — it won\'t make you wait through a triage conversation.',
+                a: 'If you describe emergency symptoms (chest pain, difficulty breathing, stroke signs), MediAI will immediately tell you to call 911 - it won\'t make you wait through a triage conversation.',
               },
               {
                 q: 'How accurate is the medicine recommendation?',
-                a: 'Medicine data is sourced directly from FDA.gov and the NIH RxNorm database — the same sources used by pharmacists. However, always read the full label and consult a pharmacist for specific questions.',
+                a: 'Medicine data is sourced directly from FDA.gov and the NIH RxNorm database - the same sources used by pharmacists. However, always read the full label and consult a pharmacist for specific questions.',
               },
               {
                 q: 'Can I use this for my family?',
-                a: 'Yes! Create a Family account to set up a family group. Share the 6-digit code with family members so each person has their own health profile — useful for parents managing children\'s health.',
+                a: 'Yes! Create a Family account to set up a family group. Share the 6-digit code with family members so each person has their own health profile - useful for parents managing children\'s health.',
               },
             ].map(({ q, a }) => (
               <details key={q} className="group bg-warm-white rounded-2xl border border-warm-border overflow-hidden">
@@ -142,3 +142,4 @@ export default function HowItWorksPage() {
     </div>
   );
 }
+

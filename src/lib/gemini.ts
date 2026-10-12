@@ -6,7 +6,7 @@ import { UrgencyLevel, Medicine, UrgencyAssessment } from '@/types';
 // ─── Client initialization ────────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-// Safety settings — allow medical content but block harmful
+// Safety settings - allow medical content but block harmful
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
   { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -24,7 +24,7 @@ async function buildSystemPrompt(): Promise<string> {
     if (data.medicines?.length) {
       medicineContext = data.medicines
         .map((m: { brandName: string; genericName: string; purpose: string; dosageSummary: string }) =>
-          `• ${m.brandName} (${m.genericName}): ${m.purpose} — ${m.dosageSummary}`
+          `• ${m.brandName} (${m.genericName}): ${m.purpose} - ${m.dosageSummary}`
         )
         .join('\n');
     }
@@ -39,7 +39,7 @@ async function buildSystemPrompt(): Promise<string> {
 - You conduct structured medical triage conversations
 - You ask ONE question at a time and wait for an answer before asking the next
 - You assess urgency and provide guidance based on symptoms
-- You NEVER diagnose — only provide triage assessment and guidance
+- You NEVER diagnose - only provide triage assessment and guidance
 - You ALWAYS recommend professional medical care for anything beyond minor symptoms
 - All medicine data is sourced live from the FDA (OpenFDA) and NIH (RxNorm)
 
@@ -49,7 +49,7 @@ async function buildSystemPrompt(): Promise<string> {
 - HIGH: Urgent care needed within hours
 - CRITICAL: CALL 911 / GO TO ER IMMEDIATELY
 
-## AVAILABLE OTC MEDICINES (live FDA data — ONLY recommend from this list):
+## AVAILABLE OTC MEDICINES (live FDA data - ONLY recommend from this list):
 ${medicineContext}
 
 ## RULES:
@@ -100,7 +100,7 @@ export async function getChatResponse(
     };
   }
 
-  // Build system prompt synchronously — no async fetch to avoid failures
+  // Build system prompt synchronously - no async fetch to avoid failures
   const systemPrompt = `You are MediAI, a compassionate AI medical triage assistant.
 
 CRITICAL INSTRUCTION: You are in the MIDDLE of an ongoing conversation. 
@@ -127,7 +127,7 @@ DayQuil, NyQuil, Mucinex (Guaifenesin), Sudafed, Robitussin,
 Pepto-Bismol, Imodium, Tums, Famotidine, Hydrocortisone cream, Neosporin
 
 RULES:
-1. Continue the conversation naturally — do NOT restart
+1. Continue the conversation naturally - do NOT restart
 2. Ask ONE question at a time
 3. Mark urgency as: [URGENCY: LOW/MEDIUM/HIGH/CRITICAL]
 4. Only recommend OTC medicines from the list above
@@ -225,7 +225,7 @@ If this is something else:
 Patient context: "${context}"
 
 Be extremely precise and thorough. Extract every piece of text visible on labels.
-Do NOT make medical recommendations — just extract and describe what you see.`;
+Do NOT make medical recommendations - just extract and describe what you see.`;
 
   const result = await model.generateContent([
     { text: prompt },
@@ -290,3 +290,4 @@ function buildUrgencyAssessment(level: UrgencyLevel, reply: string): UrgencyAsse
   };
   return assessments[level];
 }
+

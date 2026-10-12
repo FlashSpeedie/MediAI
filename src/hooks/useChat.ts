@@ -11,7 +11,7 @@ const INITIAL_MESSAGE: Message = {
 
 I'll ask you a few questions to understand your symptoms and help guide you on what to do next.
 
-**Important:** I am NOT a licensed physician. I provide triage guidance only — always consult a real healthcare professional for medical decisions.
+**Important:** I am NOT a licensed physician. I provide triage guidance only - always consult a real healthcare professional for medical decisions.
 
 Let's begin: **What is your main symptom or concern today?**`,
   timestamp: new Date(),
@@ -42,7 +42,7 @@ export function useChat() {
         m.content.trim() !== ''
     );
 
-    // Don't include the very last message — it's sent as the current userMessage
+    // Don't include the very last message - it's sent as the current userMessage
     const historyMessages = allMessages.slice(0, -1);
 
     if (historyMessages.length === 0) return [];
@@ -195,3 +195,4 @@ export function useChat() {
     totalQuestions: TRIAGE_QUESTIONS.length,
   };
 }
+

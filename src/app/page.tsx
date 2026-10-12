@@ -16,7 +16,7 @@ export default async function HomePage() {
   }
 
   const features = [
-    { icon: Brain, title: 'Structured Triage', desc: 'One question at a time. Like a real intake process — not a chatbot that overwhelms you.', color: 'text-teal' },
+    { icon: Brain, title: 'Structured Triage', desc: 'One question at a time. Like a real intake process - not a chatbot that overwhelms you.', color: 'text-teal' },
     { icon: Camera, title: 'Medicine Bottle Scanner', desc: 'Point your camera at any medicine. AI reads the label and tells you if it\'s right for your symptoms.', color: 'text-purple-500' },
     { icon: Mic, title: 'Voice Input', desc: 'Too unwell to type? Just speak. MediAI listens and responds.', color: 'text-amber' },
     { icon: Shield, title: 'FDA Drug Data', desc: 'Every medicine recommendation is sourced directly from official FDA and NIH databases.', color: 'text-coral' },
@@ -27,7 +27,7 @@ export default async function HomePage() {
   const testimonials = [
     { text: 'I was about to go to the ER at 2am for what turned out to be a tension headache. MediAI walked me through the questions and I realized I could safely wait and see my doctor in the morning.', name: 'Parent of 3', location: 'Texas' },
     { text: 'As someone with multiple chronic conditions, having an AI that actually knows my history when I describe new symptoms is genuinely useful.', name: 'Chronic illness patient', location: 'California' },
-    { text: 'The medicine scanner is unreal. I had an old bottle with no idea what it treated — scanned it and got a full breakdown in seconds.', name: 'College student', location: 'New York' },
+    { text: 'The medicine scanner is unreal. I had an old bottle with no idea what it treated - scanned it and got a full breakdown in seconds.', name: 'College student', location: 'New York' },
   ];
 
   return (
@@ -53,7 +53,7 @@ export default async function HomePage() {
               <span className="text-teal">when you feel unwell</span>
             </h1>
             <p className="text-xl text-gray-500 mb-10 text-balance leading-relaxed max-w-2xl mx-auto">
-              MediAI asks the right questions about your symptoms and tells you clearly — rest at home, see a doctor, go to urgent care, or call 911. Personalized to your health profile.
+              MediAI asks the right questions about your symptoms and tells you clearly - rest at home, see a doctor, go to urgent care, or call 911. Personalized to your health profile.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/register"
@@ -81,7 +81,7 @@ export default async function HomePage() {
               <div key={level} className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium ${color}`}>
                 <span className={`w-2 h-2 rounded-full ${dot}`} />
                 <span className="font-bold">{level}</span>
-                <span className="opacity-70">— {label}</span>
+                <span className="opacity-70">- {label}</span>
               </div>
             ))}
           </div>
@@ -164,3 +164,4 @@ export default async function HomePage() {
     </div>
   );
 }
+

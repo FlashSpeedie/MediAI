@@ -202,3 +202,4 @@ export interface UserContextForAI {
   dayOfWeek: string;
   pastHealthSummary?: string;
 }
+

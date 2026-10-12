@@ -12,7 +12,7 @@ export default function Disclaimer() {
         <div className="flex items-center gap-2 text-amber-800 text-sm">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           <span>
-            <strong>Medical Disclaimer:</strong> MediAI is an AI triage tool —{' '}
+            <strong>Medical Disclaimer:</strong> MediAI is an AI triage tool -{' '}
             <strong>not a licensed physician</strong>. Do not use for emergencies.{' '}
             <strong>Call 911 if you have a life-threatening situation.</strong>
           </span>
@@ -28,3 +28,4 @@ export default function Disclaimer() {
     </div>
   );
 }
+

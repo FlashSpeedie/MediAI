@@ -64,7 +64,7 @@ export default function ChatInput({
 
       <div className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100 transition-all">
         
-        {/* Left side action buttons — horizontal */}
+        {/* Left side action buttons - horizontal */}
         <div className="flex items-center gap-1 pb-1">
           {/* Voice button */}
           {isVoiceSupported && (
@@ -98,7 +98,7 @@ export default function ChatInput({
             {isCameraActive ? <CameraOff className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
           </button>
 
-          {/* Capture frame button — only when camera active */}
+          {/* Capture frame button - only when camera active */}
           {isCameraActive && onCaptureFrame && (
             <button
               onClick={onCaptureFrame}
@@ -131,7 +131,7 @@ export default function ChatInput({
         {/* Divider */}
         <div className="w-px h-6 bg-gray-200 self-center flex-shrink-0" />
 
-        {/* Textarea — grows to fill space */}
+        {/* Textarea - grows to fill space */}
         <textarea
           ref={textareaRef}
           value={value}
@@ -156,7 +156,7 @@ export default function ChatInput({
           }}
         />
 
-        {/* Send button — right side */}
+        {/* Send button - right side */}
         <button
           onClick={handleSend}
           disabled={!value.trim() || isLoading || disabled}
@@ -181,3 +181,4 @@ export default function ChatInput({
     </div>
   );
 }
+

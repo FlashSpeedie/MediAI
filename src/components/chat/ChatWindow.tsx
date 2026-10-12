@@ -62,3 +62,4 @@ export default function ChatWindow({ messages, urgencyLevel, isLoading }: Props)
     </div>
   );
 }
+

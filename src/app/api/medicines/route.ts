@@ -3,10 +3,10 @@ import { getDrugInfo, searchMedicinesBySymptom, OTC_SEED_NAMES, CombinedDrugInfo
 import { validateRequest, medicineSearchSchema, MedicineSearchParams } from '@/lib/validation';
 import { medicineLookupRateLimiter, addRateLimitHeaders } from '@/lib/rate-limit';
 
-// GET /api/medicines?drug=Tylenol  — look up one drug
-// GET /api/medicines?symptom=headache  — search by symptom
-// GET /api/medicines?prefetch=true  — get full seed list
-// GET /api/medicines?recall=drugname  — look up recalls for a drug
+// GET /api/medicines?drug=Tylenol  - look up one drug
+// GET /api/medicines?symptom=headache  - search by symptom
+// GET /api/medicines?prefetch=true  - get full seed list
+// GET /api/medicines?recall=drugname  - look up recalls for a drug
 
 export async function GET(request: NextRequest) {
   const rateLimitResult = await medicineLookupRateLimiter(request);

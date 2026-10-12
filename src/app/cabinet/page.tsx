@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import CabinetPage from '@/components/medicines/CabinetPage';
 
-export const metadata = { title: 'Medicine Cabinet — AI Doctor' };
+export const metadata = { title: 'Medicine Cabinet - AI Doctor' };
 
 export default async function CabinetRoute() {
   const session = await auth();

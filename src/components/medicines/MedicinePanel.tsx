@@ -242,3 +242,4 @@ export default function MedicinePanel() {
     </div>
   );
 }
+

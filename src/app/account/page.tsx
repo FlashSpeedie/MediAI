@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import AccountPage from '@/components/account/AccountPage';
 
-export const metadata = { title: 'Account — MediAI' };
+export const metadata = { title: 'Account - MediAI' };
 
 export default async function Page() {
   const session = await auth();
@@ -26,3 +26,4 @@ export default async function Page() {
 
   return <AccountPage user={user} />;
 }
+

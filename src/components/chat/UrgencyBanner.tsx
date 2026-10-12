@@ -45,3 +45,4 @@ export default function UrgencyBanner({ level, action }: Props) {
     </div>
   );
 }
+

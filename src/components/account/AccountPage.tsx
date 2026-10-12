@@ -288,10 +288,10 @@ export default function AccountPage({ user }: Props) {
                 {/* Quick stats grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { label: 'Age', value: user?.age ? `${user.age}y` : '—', icon: '🎂' },
-                    { label: 'Blood Type', value: user?.bloodType ?? '—', icon: '🩸' },
-                    { label: 'BMI', value: bmi ? bmi.toFixed(1) : '—', icon: '⚖️', sub: bmiCat?.label },
-                    { label: 'Heart Rate', value: user?.heartRateBpm ? `${user.heartRateBpm}` : '—', unit: 'bpm', icon: '❤️' },
+                    { label: 'Age', value: user?.age ? `${user.age}y` : '-', icon: '🎂' },
+                    { label: 'Blood Type', value: user?.bloodType ?? '-', icon: '🩸' },
+                    { label: 'BMI', value: bmi ? bmi.toFixed(1) : '-', icon: '⚖️', sub: bmiCat?.label },
+                    { label: 'Heart Rate', value: user?.heartRateBpm ? `${user.heartRateBpm}` : '-', unit: 'bpm', icon: '❤️' },
                   ].map(({ label, value, icon, unit, sub }) => (
                     <div key={label} className="bg-white rounded-2xl border border-warm-border p-4 shadow-card">
                       <span className="text-xl">{icon}</span>
@@ -319,7 +319,7 @@ export default function AccountPage({ user }: Props) {
                         />
                       </div>
                       <p className="text-xs text-gray-400 mt-2">
-                        {pct < 100 ? 'Complete your profile for better AI recommendations' : '✅ Profile complete — AI has full context'}
+                        {pct < 100 ? 'Complete your profile for better AI recommendations' : '✅ Profile complete - AI has full context'}
                       </p>
                       {pct < 100 && (
                         <button
@@ -339,9 +339,9 @@ export default function AccountPage({ user }: Props) {
                     title: 'Personal Info',
                     tab: 'personal' as Tab,
                     items: [
-                      { label: 'Name', value: user?.name ?? '—' },
-                      { label: 'Gender', value: user?.gender ?? '—' },
-                      { label: 'Diet', value: user?.dietType ?? '—' },
+                      { label: 'Name', value: user?.name ?? '-' },
+                      { label: 'Gender', value: user?.gender ?? '-' },
+                      { label: 'Diet', value: user?.dietType ?? '-' },
                     ],
                   },
                   {
@@ -475,7 +475,7 @@ export default function AccountPage({ user }: Props) {
                 <h2 className="font-display text-xl font-bold text-navy mb-6">Lifestyle & Habits</h2>
                 <div className="space-y-5">
                   {[
-                    { key: 'dietType', label: '🥗 Diet Type', opts: ['Omnivore', 'Vegetarian', 'Vegan', 'Pescatarian', 'Keto', 'Gluten-free', 'Halal', 'Kosher', 'Other'] },
+                    { key: 'dietType', label: '�- Diet Type', opts: ['Omnivore', 'Vegetarian', 'Vegan', 'Pescatarian', 'Keto', 'Gluten-free', 'Halal', 'Kosher', 'Other'] },
                     { key: 'activityLevel', label: '🏃 Activity Level', opts: ['Sedentary (little or no exercise)', 'Light (1-3 days/week)', 'Moderate (3-5 days/week)', 'Active (6-7 days/week)', 'Very Active (athlete)'] },
                     { key: 'smokingStatus', label: '🚬 Smoking Status', opts: ['Never smoked', 'Former smoker', 'Current smoker'] },
                     { key: 'alcoholUse', label: '🍷 Alcohol Use', opts: ['None', 'Occasional', 'Moderate', 'Heavy'] },
@@ -509,7 +509,7 @@ export default function AccountPage({ user }: Props) {
                   },
                   {
                     key: 'knownAllergies', label: 'Drug Allergies', emoji: '⚠️',
-                    desc: 'Critical — used to avoid dangerous medicine recommendations',
+                    desc: 'Critical - used to avoid dangerous medicine recommendations',
                     opts: ['None', 'Penicillin', 'Sulfa drugs', 'NSAIDs (Ibuprofen/Aspirin)', 'Acetaminophen', 'Codeine/Opioids', 'Latex', 'Other'],
                   },
                 ].map(({ key, label, emoji, desc, opts }) => (
@@ -689,3 +689,4 @@ export default function AccountPage({ user }: Props) {
     </div>
   );
 }
+

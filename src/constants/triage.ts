@@ -103,3 +103,4 @@ export const HIGH_URGENCY_KEYWORDS = [
   'severe vomiting',
   'can\'t keep fluids down',
 ];
+

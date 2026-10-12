@@ -12,7 +12,7 @@ function generateFamilyCode(): string {
   ).join('');
 }
 
-// POST — create family group
+// POST - create family group
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET — get current user's family
+// GET - get current user's family
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {

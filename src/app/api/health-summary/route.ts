@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getGroqChatResponse } from '@/lib/groq';
 
-// GET — fetch current health summary
+// GET - fetch current health summary
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -20,7 +20,7 @@ export async function GET() {
   return NextResponse.json({ summary: summary?.summary ?? null });
 }
 
-// POST — generate/update health summary from recent sessions
+// POST - generate/update health summary from recent sessions
 export async function POST() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -87,3 +87,4 @@ export async function POST() {
 
   return NextResponse.json({ summary });
 }
+

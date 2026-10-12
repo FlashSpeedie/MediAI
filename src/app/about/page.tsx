@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Stethoscope, Shield, Zap, Brain, Heart, Users, ArrowRight, CheckCircle } from 'lucide-react';
 
-export const metadata = { title: 'About MediAI — AI Medical Triage' };
+export const metadata = { title: 'About MediAI - AI Medical Triage' };
 
 export default function AboutPage() {
   const team = [
@@ -14,7 +14,7 @@ export default function AboutPage() {
     { icon: Shield, title: 'Safety First', desc: 'Every recommendation is validated against medical guidelines. We never suggest prescription medications.', color: 'text-teal' },
     { icon: Brain, title: 'Intelligent Triage', desc: 'Our structured questioning mirrors real clinical intake processes used in emergency rooms.', color: 'text-purple-500' },
     { icon: Heart, title: 'Compassionate Care', desc: 'We understand that health concerns cause anxiety. MediAI is designed to calm, not alarm.', color: 'text-coral' },
-    { icon: Zap, title: 'Instant Guidance', desc: 'Get a triage assessment in minutes — not hours waiting in urgent care for minor concerns.', color: 'text-amber' },
+    { icon: Zap, title: 'Instant Guidance', desc: 'Get a triage assessment in minutes - not hours waiting in urgent care for minor concerns.', color: 'text-amber' },
   ];
 
   return (
@@ -36,7 +36,7 @@ export default function AboutPage() {
             <span className="text-teal-300">at your fingertips</span>
           </h1>
           <p className="text-xl text-white/70 max-w-2xl mx-auto text-balance">
-            MediAI bridges the gap between wondering "should I see a doctor?" and knowing exactly what to do — using AI-powered triage that's fast, safe, and honest about its limits.
+            MediAI bridges the gap between wondering "should I see a doctor?" and knowing exactly what to do - using AI-powered triage that's fast, safe, and honest about its limits.
           </p>
         </div>
       </section>
@@ -47,13 +47,13 @@ export default function AboutPage() {
           <div>
             <h2 className="font-display text-4xl font-bold text-navy mb-5">Our Mission</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Millions of people visit emergency rooms every year for conditions that could be safely managed at home — or wait too long at home for conditions that need urgent care. The problem isn't access to information. It's knowing what to do with your specific symptoms, at this moment, given your health history.
+              Millions of people visit emergency rooms every year for conditions that could be safely managed at home - or wait too long at home for conditions that need urgent care. The problem isn't access to information. It's knowing what to do with your specific symptoms, at this moment, given your health history.
             </p>
             <p className="text-gray-600 leading-relaxed mb-6">
-              MediAI was built to give everyone — regardless of access to healthcare — a reliable first step: a structured, personalized triage conversation that tells you clearly what to do next.
+              MediAI was built to give everyone - regardless of access to healthcare - a reliable first step: a structured, personalized triage conversation that tells you clearly what to do next.
             </p>
             <div className="space-y-2">
-              {['Free to use', 'FDA-sourced medicine data', 'No diagnosis — only guidance', 'Privacy-first design'].map((item) => (
+              {['Free to use', 'FDA-sourced medicine data', 'No diagnosis - only guidance', 'Privacy-first design'].map((item) => (
                 <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
                   <CheckCircle className="w-4 h-4 text-teal flex-shrink-0" />
                   {item}
@@ -108,7 +108,7 @@ export default function AboutPage() {
           <Shield className="w-8 h-8 text-amber mx-auto mb-3" />
           <h3 className="font-display text-xl font-bold text-navy mb-3">Important Disclaimer</h3>
           <p className="text-sm text-gray-600 leading-relaxed">
-            MediAI is an AI triage assistant — not a licensed physician and not a substitute for professional medical care. MediAI cannot diagnose conditions. Always consult a qualified healthcare professional for medical decisions. In emergencies, call 911 immediately.
+            MediAI is an AI triage assistant - not a licensed physician and not a substitute for professional medical care. MediAI cannot diagnose conditions. Always consult a qualified healthcare professional for medical decisions. In emergencies, call 911 immediately.
           </p>
         </div>
         <div className="mt-10">
@@ -120,3 +120,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

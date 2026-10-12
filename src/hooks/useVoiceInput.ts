@@ -156,3 +156,4 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
 
   return { ...state, startListening, stopListening, toggleListening };
 }
+

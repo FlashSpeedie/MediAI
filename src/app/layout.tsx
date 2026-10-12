@@ -10,7 +10,7 @@ const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'MediAI — AI Medical Triage Assistant',
+  title: 'MediAI - AI Medical Triage Assistant',
   description: 'AI-powered symptom checker and medical triage tool. Not a replacement for professional medical care.',
   keywords: ['medical', 'AI', 'symptom checker', 'triage', 'health'],
 };
@@ -36,3 +36,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

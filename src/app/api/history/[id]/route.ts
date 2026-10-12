@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/history/:id — get one session with full messages
+// GET /api/history/:id - get one session with full messages
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -26,7 +26,7 @@ export async function GET(
   return NextResponse.json({ session: symptomSession });
 }
 
-// DELETE /api/history/:id — delete a session
+// DELETE /api/history/:id - delete a session
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

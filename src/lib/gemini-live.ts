@@ -164,3 +164,4 @@ export class GeminiLiveClient {
     this.config.onStatusChange(status);
   }
 }
+
