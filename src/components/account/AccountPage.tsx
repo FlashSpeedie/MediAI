@@ -548,8 +548,7 @@ export default function AccountPage({ user }: Props) {
                   </div>
                 </div>
 
-                {user?.password ? (
-                  <div className="space-y-5">
+                <div className="space-y-5">
                     {[
                       { key: 'current', label: 'Current Password' },
                       { key: 'new', label: 'New Password' },
@@ -583,19 +582,6 @@ export default function AccountPage({ user }: Props) {
                       Update Password
                     </button>
                   </div>
-                ) : (
-                  <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <Shield className="w-4 h-4 text-blue-500" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-blue-800 mb-1">Google Account</p>
-                        <p className="text-sm text-blue-600">You signed in with Google — your password is managed by Google. Visit <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" className="underline font-medium">myaccount.google.com</a> to manage your security settings.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 

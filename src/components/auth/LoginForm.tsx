@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Mail, Lock, Chrome } from 'lucide-react';
+import { Loader2, Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginForm() {
@@ -10,7 +10,6 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,11 +33,6 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    await signIn('google', { callbackUrl: '/dashboard' });
-  };
-
   return (
     <div className="w-full max-w-md">
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
@@ -48,29 +42,6 @@ export default function LoginForm() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
           <p className="text-gray-500 text-sm mt-1">Sign in to your MediAI account</p>
-        </div>
-
-        {/* Google Button */}
-        <button
-          onClick={handleGoogle}
-          disabled={googleLoading || loading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm font-medium text-gray-700 mb-6"
-        >
-          {googleLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Chrome className="w-4 h-4 text-blue-500" />
-          )}
-          Continue with Google
-        </button>
-
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-white px-3 text-xs text-gray-400">or sign in with email</span>
-          </div>
         </div>
 
         {/* Error */}
@@ -114,7 +85,7 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            disabled={loading || googleLoading}
+            disabled={loading}
             className="w-full py-2.5 bg-brand-600 text-white rounded-xl font-medium text-sm hover:bg-brand-700 transition flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
